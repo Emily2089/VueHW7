@@ -1,0 +1,5 @@
+@import "bootstrap/scss/functions"; // 按照官方文件說明，若要自定義變數則需要先載入 functions
+
+@import "./variables"; // 自定義變數
+
+@import 'bootstrap/scss/bootstrap.scss';
