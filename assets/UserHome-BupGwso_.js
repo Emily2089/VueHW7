@@ -1,0 +1,1 @@
+import{_ as e,c as o,o as s,a as c}from"./index-DeUXExve.js";const t={},_={class:"home"},a=c("h1",null,"Hello, This is Home Page.",-1),n=[a];function r(i,l){return s(),o("div",_,n)}const h=e(t,[["render",r]]);export{h as default};
