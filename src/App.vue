@@ -3,7 +3,7 @@ export default {};
 </script>
 
 <template>
-  <div class="container">
+  <div>
     <RouterView />
   </div>
 </template>

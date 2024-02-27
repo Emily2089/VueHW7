@@ -1,5 +1,7 @@
 <script>
-import AdminProductModal from '../../components/AdminProductModal.vue';
+import PaginationComponent from '@/components/tools/PaginationComponent.vue';
+import AdminProductModal from '@/components/AdminProductModal.vue';
+import AdminDelProductModal from '@/components/AdminDelProductModal.vue';
 
 const { VITE_API_URL, VITE_API_NAME } = import.meta.env;
 
@@ -23,9 +25,11 @@ export default {
   },
   components: {
     AdminProductModal,
+    AdminDelProductModal,
+    PaginationComponent,
   },
   methods: {
-    // 取得後台資料
+    // 取得後台產品資料
     getData(page = 1) {
       // note：路徑有 all 代表全部資料，沒有 all 代表是有分頁的。另外，根據文件說明，若是使用 "含分頁" 的路徑，須另外帶入參數 1. page 2. category
       this.axios.get(`${VITE_API_URL}/api/${VITE_API_NAME}/admin/products?page=${page}`)
@@ -97,57 +101,62 @@ export default {
 </script>
 
 <template>
-  <AdminProductModal ref="pModal" :temp-product="tempProduct" :update-data="updateData"
+  <div>
+    <AdminProductModal ref="pModal" :temp-product="tempProduct" :update-data="updateData"
     :is_new="is_new"></AdminProductModal>
-  <div class="text-end mt-4">
-    <button class="btn btn-primary" @click="openModal('新增')">
-      建立新的產品
-    </button>
+    <AdminDelProductModal ref="dModal" :temp-product="tempProduct" :delete-data="deleteData"
+      ></AdminDelProductModal>
+    <div class="text-end mt-4">
+      <button class="btn btn-primary" @click="openModal('新增')">
+        建立新的產品
+      </button>
+    </div>
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th width="120" class="text-center">
+            分類
+          </th>
+          <th class="text-center">產品名稱</th>
+          <th width="80" class="text-center">
+            原價
+          </th>
+          <th width="80" class="text-center">
+            售價
+          </th>
+          <th width="120" class="text-center">
+            是否啟用
+          </th>
+          <th width="120" class="text-center">
+            編輯
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="product in products" :key="product.id">
+          <td>{{ product.category }}</td>
+          <td>{{ product.title }}</td>
+          <td class="text-end">{{ product.origin_price }}</td>
+          <td class="text-end">{{ product.price }}</td>
+          <td class="text-center">
+            <span :class="product.is_enabled ? 'text-success' : 'none'"
+              >{{ product.is_enabled ? '啟用' : '未啟用' }}</span>
+          </td>
+          <td class="text-center">
+            <div class="btn-group">
+              <button type="button" class="btn btn-outline-primary btn-sm"
+                @click="openModal('編輯', product)">
+                編輯
+              </button>
+              <button type="button" class="btn btn-outline-danger btn-sm"
+                @click="openModal('刪除', product)">
+                刪除
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <PaginationComponent :pages="pages" :get-data="getData"></PaginationComponent>
   </div>
-  <table class="table mt-4">
-    <thead>
-      <tr>
-        <th width="120" class="text-center">
-          分類
-        </th>
-        <th class="text-center">產品名稱</th>
-        <th width="120" class="text-center">
-          原價
-        </th>
-        <th width="120" class="text-center">
-          售價
-        </th>
-        <th width="100" class="text-center">
-          是否啟用
-        </th>
-        <th width="120" class="text-center">
-          編輯
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="product in products" :key="product.id">
-        <td>{{ product.category }}</td>
-        <td>{{ product.title }}</td>
-        <td class="text-center">{{ product.origin_price }}</td>
-        <td class="text-center">{{ product.price }}</td>
-        <td class="text-center">
-          <span :class="product.is_enabled ? 'text-success' : 'none'"
-            >{{ product.is_enabled ? '啟用' : '未啟用' }}</span>
-        </td>
-        <td class="text-center">
-          <div class="btn-group">
-            <button type="button" class="btn btn-outline-primary btn-sm"
-              @click="openModal('編輯', product)">
-              編輯
-            </button>
-            <button type="button" class="btn btn-outline-danger btn-sm"
-              @click="openModal('刪除', product)">
-              刪除
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
 </template>

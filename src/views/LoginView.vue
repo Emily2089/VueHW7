@@ -1,4 +1,8 @@
 <script>
+import { mapActions } from 'pinia';
+import messageToastStore from '@/stores/messageToastStore';
+import MessageToast from '@/components/tools/MessageToast.vue';
+
 const { VITE_API_URL } = import.meta.env;
 
 export default {
@@ -10,17 +14,30 @@ export default {
       },
     };
   },
+  components: {
+    MessageToast,
+  },
   methods: {
+    ...mapActions(messageToastStore, ['pushMessage']),
     login() {
       this.axios.post(`${VITE_API_URL}/admin/signin`, this.user)
         .then((res) => {
           // 存取 token 到 cookie
           const { expired, token } = res.data;
           document.cookie = `emilyToken=${token}; expires=${new Date(expired)};`;
+          this.pushMessage({
+            style: 'success',
+            title: '登入成功',
+            content: res.data.msg,
+          });
           this.$router.push('/admin/products');
         })
         .catch((err) => {
-          alert('登入失敗', err.response.data.message);
+          this.pushMessage({
+            style: 'danger',
+            title: '登入失敗',
+            content: err.response.data.message,
+          });
         });
     },
   },
@@ -28,6 +45,7 @@ export default {
 </script>
 
 <template>
+  <MessageToast></MessageToast>
   <div id="login">
     <div class="container">
       <div class="row justify-content-center">

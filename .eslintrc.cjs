@@ -25,6 +25,7 @@ module.exports = {
       'axios',
       'vue-axios',
       'bootstrap',
+      'pinia',
     ],
   },
   rules: {
