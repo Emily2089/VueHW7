@@ -12,6 +12,7 @@ export default {
         username: '',
         password: '',
       },
+      isLoading: false,
     };
   },
   components: {
@@ -20,11 +21,13 @@ export default {
   methods: {
     ...mapActions(messageToastStore, ['pushMessage']),
     login() {
+      this.isLoading = true;
       this.axios.post(`${VITE_API_URL}/admin/signin`, this.user)
         .then((res) => {
           // 存取 token 到 cookie
           const { expired, token } = res.data;
           document.cookie = `emilyToken=${token}; expires=${new Date(expired)};`;
+          this.isLoading = false;
           this.pushMessage({
             style: 'success',
             title: '登入成功',
@@ -33,6 +36,7 @@ export default {
           this.$router.push('/admin/products');
         })
         .catch((err) => {
+          this.isLoading = false;
           this.pushMessage({
             style: 'danger',
             title: '登入失敗',
@@ -45,6 +49,7 @@ export default {
 </script>
 
 <template>
+  <VueLoading :active="isLoading"></VueLoading>
   <MessageToast></MessageToast>
   <div id="login">
     <div class="container">

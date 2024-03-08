@@ -9,7 +9,7 @@ export default {
 
 <template>
   <nav aria-label="Page navigation example">
-    <ul class="pagination">
+    <ul class="pagination justify-content-center align-self-end">
       <!-- note：disabled 的條件也可寫成 page.current_page === 1，但這樣做的缺點就是它被寫死了，
         如果在做尾頁的條件限制也是這樣寫，則每次總頁數改變時，都必須調整這個 disabled 的條件，因此不推薦這樣寫 -->
       <li class="page-item" :class="{ disabled: !pages.has_pre }">

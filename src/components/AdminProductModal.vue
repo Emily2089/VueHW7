@@ -1,26 +1,18 @@
 <script>
-import { Modal } from 'bootstrap';
+import modalMixin from '@/methods/modalMixin';
 
 export default {
   props: {
     tempProduct: Object,
-    updateData: Function,
     is_new: Boolean,
   },
   data() {
     return {
-      productModal: '',
       editProduct: {},
     };
   },
-  methods: {
-    openModal() {
-      this.productModal.show();
-    },
-    closeModal() {
-      this.productModal.hide();
-    },
-  },
+  emits: ['update-data'],
+  mixins: [modalMixin],
   watch: {
     tempProduct() {
       // note：tempProduct 的值會一直發生變化，像是新增產品或要對特定產品進行編輯時，
@@ -29,7 +21,6 @@ export default {
     },
   },
   mounted() {
-    this.productModal = new Modal(this.$refs.productModal, { backdrop: 'static' });
     // note：因為不能直接使用 v-model 去修改傳入的值 tempProduct，
     // 因此先將傳入的值放在 editProduct ，然後再去做修改
     this.editProduct = this.tempProduct;
@@ -38,7 +29,7 @@ export default {
 </script>
 
 <template>
-  <div id="productModal" ref="productModal" class="modal fade" tabindex="-1"
+  <div id="productModal" ref="modal" class="modal fade" tabindex="-1"
     aria-labelledby="productModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
       <div class="modal-content border-0">
@@ -187,7 +178,7 @@ export default {
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
             取消
           </button>
-          <button type="button" class="btn btn-primary" @click="updateData">
+          <button type="button" class="btn btn-primary" @click="$emit('update-data', tempProduct)">
             確認
           </button>
         </div>

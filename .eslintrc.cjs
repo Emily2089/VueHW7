@@ -26,6 +26,8 @@ module.exports = {
       'vue-axios',
       'bootstrap',
       'pinia',
+      'vue-loading-overlay',
+      'vue-loading-overlay/dist/css/index.css',
     ],
   },
   rules: {

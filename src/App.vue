@@ -10,4 +10,7 @@ export default {};
 
 <style lang="scss">
 // @import './assets/all.scss';
+body {
+  height: 100vh,
+}
 </style>

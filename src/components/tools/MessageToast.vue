@@ -17,7 +17,7 @@ export default {
     <div
       v-for="(msg, key) in messages"
       :key="'toast' + key "
-      class="toast show"
+      class="toast show "
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
@@ -25,7 +25,6 @@ export default {
       <div class="toast-header">
         <span :class="`bg-${msg.style}`" class="p-2 rounded me-2 d-inline-block"></span>
         <strong class="me-auto">{{ msg.title }}</strong>
-        <small class="text-muted">時間</small>
         <button
           type="button"
           class="btn-close"
