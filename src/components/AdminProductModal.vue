@@ -1,5 +1,9 @@
 <script>
 import modalMixin from '@/methods/modalMixin';
+import { mapActions } from 'pinia';
+import messageToastStore from '@/stores/messageToastStore';
+
+const { VITE_API_URL, VITE_API_NAME } = import.meta.env;
 
 export default {
   props: {
@@ -18,6 +22,41 @@ export default {
       // note：tempProduct 的值會一直發生變化，像是新增產品或要對特定產品進行編輯時，
       // 因此，使用 watch 來監聽這個變數，每次它發生變化時，就將這新的值放在 editProduct 中
       this.editProduct = this.tempProduct;
+    },
+  },
+  methods: {
+    ...mapActions(messageToastStore, ['pushMessage']),
+    uploadFile() {
+      // # region note：
+      // 1. 根據 API 文件的說明，若要上傳圖片，需要發送一個表單
+      // 2. 使用 multipart/form-data 可以把複數個資料格式一次傳送（發送請求）出去，主要用在 HTML 的表單裡頭，或是在實作檔案上傳功能時使用到
+      // 3. 要發送一個 Content Type 為 multipart/form-data 的請求，可用 HTML 的 <form> （或是 JavaScript 的 FormData）
+      // 4. 輸入 new FomData() 就可以建立表單物件
+      // 5. 若將一個表單的 DOM 元素放在 FormData() 中，則它會將該表單的資料轉換成可透過 AJAX 傳送到後端的資料形式
+      // 6. 對該表單物件，可以使用 .append 新增欄位
+      // # endregion
+      const fileUploaded = this.$refs.fileInput.files[0];
+      const formData = new FormData(); // 建立表單物件
+      formData.append('file-to-upload', fileUploaded);
+      this.axios.post(`${VITE_API_URL}/api/${VITE_API_NAME}/admin/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }).then((res) => {
+        this.$refs.fileInput.value = ''; // 上傳完檔案後，清空 input 的內容
+        this.editProduct.mainImg = res.data.imageUrl;
+        this.pushMessage({
+          style: 'success',
+          title: '圖片上傳成功',
+          content: res.data.message,
+        });
+      }).catch((err) => {
+        this.pushMessage({
+          style: 'danger',
+          title: '圖片上傳失敗',
+          content: err.response.data.message,
+        });
+      });
     },
   },
   mounted() {
@@ -46,15 +85,20 @@ export default {
             <div class="col-sm-4">
               <div class="mb-2">
                 <div class="mb-3">
-                  <label for="mainImg" class="form-label">主要圖片</label>
+                  <label for="mainImg" class="form-label">主要圖片網址</label>
                   <!-- note：這邊的 v-model="tempProduct.mainImg" 會報錯是因為 ESLint 禁止修改傳入的值，
                     因此在 data 新增變數 editProduct -->
                   <input type="text" id="mainImg" class="form-control" placeholder="請輸入圖片連結"
                     v-model="editProduct.mainImg">
                 </div>
+                <div class="mb-3">
+                  <label for="imgUpload" class="form-label">或上傳圖片</label>
+                  <input type="file" id="imgUpload" class="form-control"
+                    ref="fileInput" @change="uploadFile">
+                </div>
                 <img class="img-fluid" :src="editProduct.mainImg" alt="">
               </div>
-              <h3>多圖新增</h3>
+              <h5>多圖新增</h5>
               <!-- note： Array.isArray() 可用來確認傳入的內容是否為一個陣列-->
               <template v-if="Array.isArray(editProduct.demoImg)">
                 <div class="mb-3">
@@ -152,7 +196,7 @@ export default {
                         @click="editProduct.features.push('')">新增遊戲特色</button>
                     </template>
                     <template v-else>
-                      <button class="btn btn-outline-primary btn-sm d-block w-100"
+                      <button class="btn btn-outline-danger btn-sm d-block w-100"
                         @click="editProduct.features.pop()">刪除遊戲特色</button>
                     </template>
                   </div>
