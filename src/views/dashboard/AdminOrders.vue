@@ -143,9 +143,6 @@ export default {
             訂單狀態
           </th>
           <th width="100" class="text-center">
-            付款日期
-          </th>
-          <th width="100" class="text-center">
             編輯
           </th>
         </tr>
@@ -167,7 +164,6 @@ export default {
             <span :class="order.is_paid ? 'text-success' : 'text-danger'"
               >{{ order.is_paid ? '已付款' : '未付款' }}</span>
           </td>
-          <td class="text-center"></td>
           <td class="text-center">
             <div class="btn-group">
               <button

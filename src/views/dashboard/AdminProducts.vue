@@ -47,7 +47,6 @@ export default {
 
       this.axios.get(apiUrl)
         .then((res) => {
-          console.log(apiUrl);
           this.products = res.data.products;
           this.pages = res.data.pagination;
           this.isLoading = false;
